@@ -1,0 +1,12 @@
+CHIP RAM16 {
+    IN in[16], address[4], load;
+    OUT out[16];
+
+    PARTS:
+    DMux(in=load, sel=address[3], a=a, b=b);
+
+    RAM8(in=in, load=a, address=address[0..2], out=out1);
+    RAM8(in=in, load=b, address=address[0..2], out=out2);
+
+    Mux16(a=out1, b=out2, sel=address[3], out=out);
+}

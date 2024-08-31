@@ -1,0 +1,41 @@
+CHIP CPU {
+    IN Instruction[6], fromM[16], Reset;
+    OUT toM[16], addressM[15], writeM, PCout[15]; 
+
+    PARTS:
+    // Instruction type
+    DMux4Way(in=true, sel=Instruction[4..5], a=read, b=write,
+    c=add, d=jmp, b=writeM);
+
+    // load register
+    Or(a=add, b=read, out=loadReg);
+    DMux4Way(in=loadReg, sel=Instruction[2..3], a=loadR0,
+    b=loadR1, c=loadR2, d=loadR3);
+    Mux16(a=fromM, b=sum, sel=Instruction[5], out=regIn);
+
+    // registers
+    Register(in=regIn, load=loadR0, out=r0);
+    Register(in=regIn, load=loadR1, out=r1);
+    Register(in=regIn, load=loadR2, out=r2);
+    Register(in=regIn, load=loadR3, out=r3);
+
+    // adder
+    Add16(a=rx, b=ry, out=sum);
+
+    // Rx and Ry
+    Mux4Way16(a=r0, b=r1, c=r2, d=r3, sel=Instruction[2..3],
+    out=rx, out[0..7]=rxLow, out[8..15]=rxHigh);
+    Mux4Way16(a=r0, b=r1, c=r2, d=r3, sel=Instruction[0..1],
+    out=ry, out[0..7]=ryLow, out[8..15]=ryHigh, out=toM);
+
+    // memory address
+    Mux16(a=rx, b=ry, sel=read, out[0..14]=addressM);
+
+    // jump
+    Or8Way(in=ryLow, out=ryLowOr);
+    Or8Way(in=ryHigh, out=ryHighOr);
+    Or(a=ryLowOr, b=ryHighOr, out=ryIsNotZero);
+    Not(in=ryIsNotZero, out=ryIsZero);
+    And(a=ryIsZero, b=jmp, out=shouldJump);
+    PC(in=ry, load=shouldJump, inc=true, reset=Reset, out[0..14]=PCout);
+}

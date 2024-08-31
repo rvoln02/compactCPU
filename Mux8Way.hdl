@@ -1,0 +1,19 @@
+// if sel == 000, out = a
+// if sel == 001, out = b
+// if sel == 010, out = c
+// if sel == 011, out = d
+// if sel == 100, out = e
+// if sel == 101, out = f
+// if sel == 110, out = g
+// if sel == 111, out = h
+
+CHIP Mux8Way {
+    IN a,b,c,d,e,f,g,h, sel[3];
+    OUT out;
+
+    PARTS:
+    // Your Code
+    Mux4Way(a=a, b=b, c=c, d=d, sel=sel[0..1], out=mux1);
+    Mux4Way(a=e, b=f, c=g, d=h, sel=sel[0..1], out=mux2);
+    Mux(a=mux1, b=mux2, sel=sel[2], out=out);
+}

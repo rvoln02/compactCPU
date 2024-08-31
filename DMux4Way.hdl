@@ -1,0 +1,15 @@
+// if sel == 00, a = in; b,c,d = 0
+// if sel == 01, b = in; a,c,d = 0
+// if sel == 10, c = in; a,b,d = 0
+// if sel == 11, d = in; a,b,c = 0
+
+CHIP DMux4Way {
+    IN in, sel[2];
+    OUT a,b,c,d;
+
+    PARTS:
+   // Your Code
+    DMux(in=in, sel=sel[1], a=dm1, b=dm2);
+    DMux(in=dm1, sel=sel[0], a=a, b=b);
+    DMux(in=dm2, sel=sel[0], a=c, b=d);
+}

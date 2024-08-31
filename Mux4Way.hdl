@@ -1,0 +1,15 @@
+// if sel == 00, out = a
+// if sel == 01, out = b
+// if sel == 10, out = c
+// if sel == 11, out = d
+
+CHIP Mux4Way{
+    IN a, b, c, d, sel[2];
+    OUT out;
+
+    PARTS:
+    // Your Code
+    Mux(a=a, b=b, sel=sel[0], out=mux1);
+    Mux(a=c, b=d, sel=sel[0], out=mux2);
+    Mux(a=mux1, b=mux2, sel=sel[1], out=out);
+}
